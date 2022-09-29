@@ -34,7 +34,6 @@ async def on_start():
                 name="DM me with sms",
                 type=interactions.PresenceActivityType.STREAMING)
         ]))
-
 @bot.event
 async def on_message_create(message: Message):
     channel = await message.get_channel()
@@ -64,7 +63,7 @@ async def start_sms(ctx: interactions.ComponentContext):
     await ctx.popup(modal)
 
 @bot.modal("sms")
-async def sms(ctx: CommandContext, one, two):
+async def sms(ctx: CommandContext, one):
     phone = one
     DM_sms(phone)
 
