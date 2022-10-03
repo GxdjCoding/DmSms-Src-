@@ -1,5 +1,7 @@
 import interactions
 import requests
+import time
+import sys
 from interactions import Button, ButtonStyle, CommandContext, SelectMenu, SelectOption, ActionRow, Modal, TextInput, TextStyleType, Embed
 from concurrent.futures import ThreadPoolExecutor
 from interactions import (
@@ -18,7 +20,7 @@ from random import choice
 from string import ascii_uppercase, digits
 from re import A, search
 from requests import post, Session, get
-bot = interactions.Client("",intents=interactions.Intents.DEFAULT | interactions.Intents.GUILD_MESSAGES)
+bot = interactions.Client("MTAyNjI5NTU1ODU1OTc2NDU5Mg.G9YbeZ.yTdNGkfq6jxgt-BQz5Gdr32cVvW8uab2COg_Bw",intents=interactions.Intents.DEFAULT | interactions.Intents.GUILD_MESSAGES)
 useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36 Edg/95.0.1020.40"
 header = {
     "user-agent":
@@ -26,14 +28,13 @@ header = {
 }
 threading = ThreadPoolExecutor(max_workers=int(100000))
 
+global data_stop
+data_stop = False
+
 @bot.event
 async def on_start():
-    await bot.change_presence(
-        interactions.ClientPresence(activities=[
-            interactions.PresenceActivity(
-                name="DM me with sms",
-                type=interactions.PresenceActivityType.STREAMING)
-        ]))
+    print("Test")
+
 @bot.event
 async def on_message_create(message: Message):
     channel = await message.get_channel()
@@ -64,8 +65,51 @@ async def start_sms(ctx: interactions.ComponentContext):
 
 @bot.modal("sms")
 async def sms(ctx: CommandContext, one):
-    phone = one
-    DM_sms(phone)
+    global data_stop
+    i = 0
+    await ctx.send("กำลังเริ่มยิง...")
+    time.sleep(1)
+    while i < 10:
+        if data_stop == True:
+            sys.exit()
+        elif data_stop == False:
+            stop_spam = Button(
+                style=ButtonStyle.DANGER,
+                custom_id="stop_spam",
+                label="หยุดยิง",
+            )
+            i += 1
+            phone = one
+            DM_sms(phone)
+            await ctx.edit(f"กำลังเริ่มยิงไปที่ {phone} | ความคืบหน้า: {i}0 /100 %",components=[stop_spam])
+    else:
+        if i == 10:
+            end_spam = Button(
+                style=ButtonStyle.SUCCESS,
+                custom_id="end_spam",
+                label="ยิงเสร็จแล้ว !!",
+                disabled=True
+            )
+            await ctx.edit("ยิงเสร็จแล้วครับ !!",components=[end_spam])
+        
+## Stop Spam ##
+
+@bot.component("stop_spam")
+async def stop_spam(ctx: interactions.ComponentContext):
+    global data_stop
+    if data_stop == False:
+        data_stop = True
+        end_spam01 = Button(
+                style=ButtonStyle.DANGER,
+                custom_id="end_spam01",
+                label="หยุดยิง",
+                disabled=True
+            )
+        await ctx.edit("หยุดยิงเบอร์ดังกล่าวแล้ว !!",components=[end_spam01])
+    elif data_stop == True:
+        await ctx.edit("ไม่สามารถหยุดยิงได้ เนื่องจากหยุดยิงอยู่แล้ว !!")
+    else:
+        await ctx.edit("เกิดข้อผิดพลาด !!")
 
 def randomString(N):
     return ''.join(choice(ascii_uppercase + digits) for _ in range(N))
