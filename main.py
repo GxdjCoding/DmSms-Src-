@@ -20,7 +20,7 @@ from random import choice
 from string import ascii_uppercase, digits
 from re import A, search
 from requests import post, Session, get
-bot = interactions.Client("MTAyNjI5NTU1ODU1OTc2NDU5Mg.G9YbeZ.yTdNGkfq6jxgt-BQz5Gdr32cVvW8uab2COg_Bw",intents=interactions.Intents.DEFAULT | interactions.Intents.GUILD_MESSAGES)
+bot = interactions.Client("",intents=interactions.Intents.DEFAULT | interactions.Intents.GUILD_MESSAGES)
 useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36 Edg/95.0.1020.40"
 header = {
     "user-agent":
